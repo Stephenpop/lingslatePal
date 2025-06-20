@@ -44,6 +44,7 @@ export default function TranslatePage() {
   const [isTranslating, setIsTranslating] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [detectedLang, setDetectedLang] = useState('');
+  const [error, setError] = useState(''); // Added error state
   const { toast } = useToast();
 
   const translateText = async (text: string, from: string, to: string) => {
@@ -312,6 +313,7 @@ export default function TranslatePage() {
                         ) : (
                           <p className="text-slate-400">Translation will appear here...</p>
                         )}
+                        {error && <p style={{ color: 'red' }}>Error: {error}</p>} {/* Display error */}
                       </div>
 
                       {translatedText && (
