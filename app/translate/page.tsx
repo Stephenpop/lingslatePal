@@ -1,171 +1,145 @@
-'use client';
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Volume2, Mic, Copy, RotateCcw, Loader2, Languages, History, BookOpen, Star } from 'lucide-react';
-import Link from 'next/link';
-import { useToast } from '@/hooks/use-toast';
+"use client"
+
+import { useState } from "react"
+import { motion } from "framer-motion"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
+import { ArrowRight, Volume2, Mic, Copy, RotateCcw, Loader2, Languages, History, BookOpen, Star } from "lucide-react"
+import Link from "next/link"
+import { useToast } from "@/hooks/use-toast"
 
 const languages = [
-  { code: 'auto', name: 'Auto Detect', flag: '🌐' },
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'es', name: 'Spanish', flag: '🇪🇸' },
-  { code: 'fr', name: 'French', flag: '🇫🇷' },
-  { code: 'de', name: 'German', flag: '🇩🇪' },
-  { code: 'it', name: 'Italian', flag: '🇮🇹' },
-  { code: 'pt', name: 'Portuguese', flag: '🇵🇹' },
-  { code: 'ru', name: 'Russian', flag: '🇷🇺' },
-  { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
-  { code: 'ko', name: 'Korean', flag: '🇰🇷' },
-  { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
-  { code: 'ar', name: 'Arabic', flag: '🇸🇦' },
-  { code: 'hi', name: 'Hindi', flag: '🇮🇳' },
-  { code: 'tr', name: 'Turkish', flag: '🇹🇷' },
-  { code: 'pl', name: 'Polish', flag: '🇵🇱' },
-  { code: 'nl', name: 'Dutch', flag: '🇳🇱' },
-];
+  { code: "auto", name: "Auto Detect", flag: "🌐" },
+  { code: "en", name: "English", flag: "🇺🇸" },
+  { code: "es", name: "Spanish", flag: "🇪🇸" },
+  { code: "fr", name: "French", flag: "🇫🇷" },
+  { code: "de", name: "German", flag: "🇩🇪" },
+  { code: "it", name: "Italian", flag: "🇮🇹" },
+  { code: "pt", name: "Portuguese", flag: "🇵🇹" },
+  { code: "ru", name: "Russian", flag: "🇷🇺" },
+  { code: "ja", name: "Japanese", flag: "🇯🇵" },
+  { code: "ko", name: "Korean", flag: "🇰🇷" },
+  { code: "zh", name: "Chinese", flag: "🇨🇳" },
+  { code: "ar", name: "Arabic", flag: "🇸🇦" },
+  { code: "hi", name: "Hindi", flag: "🇮🇳" },
+  { code: "tr", name: "Turkish", flag: "🇹🇷" },
+  { code: "pl", name: "Polish", flag: "🇵🇱" },
+  { code: "nl", name: "Dutch", flag: "🇳🇱" },
+]
 
 const recentTranslations = [
-  { source: 'Hello world', target: 'Hola mundo', from: 'en', to: 'es' },
-  { source: 'Good morning', target: 'Bonjour', from: 'en', to: 'fr' },
-  { source: 'Thank you', target: 'Danke', from: 'en', to: 'de' },
-];
+  { source: "Hello world", target: "Hola mundo", from: "en", to: "es" },
+  { source: "Good morning", target: "Bonjour", from: "en", to: "fr" },
+  { source: "Thank you", target: "Danke", from: "en", to: "de" },
+]
 
 export default function TranslatePage() {
-  const [sourceText, setSourceText] = useState('');
-  const [translatedText, setTranslatedText] = useState('');
-  const [sourceLang, setSourceLang] = useState('auto');
-  const [targetLang, setTargetLang] = useState('es');
-  const [isTranslating, setIsTranslating] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const [detectedLang, setDetectedLang] = useState('');
-  const { toast } = useToast();
+  const [sourceText, setSourceText] = useState("")
+  const [translatedText, setTranslatedText] = useState("")
+  const [sourceLang, setSourceLang] = useState("auto")
+  const [targetLang, setTargetLang] = useState("es")
+  const [isTranslating, setIsTranslating] = useState(false)
+  const [isListening, setIsListening] = useState(false)
+  const [detectedLang, setDetectedLang] = useState("")
+  const { toast } = useToast()
 
   const translateText = async (text: string, from: string, to: string) => {
-    setIsTranslating(true);
+    setIsTranslating(true)
 
-    try {
-      // Attempt API call first
-      const response = await fetch('/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, source: from, target: to }),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setTranslatedText(data.translatedText || 'Translation not available');
-        setDetectedLang(from === 'auto' ? 'English' : ''); // Placeholder
-        return;
-      }
-      // Fallback to mock if API fails
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate delay
-      if (from === 'auto') setDetectedLang('English');
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 1500))
 
-      const mockTranslations: Record<string, Record<string, string>> = {
-        hello: { es: 'hola', fr: 'bonjour', de: 'hallo', it: 'ciao' },
-        goodbye: { es: 'adiós', fr: 'au revoir', de: 'auf wiedersehen', it: 'ciao' },
-        'thank you': { es: 'gracias', fr: 'merci', de: 'danke', it: 'grazie' },
-        'how are you': { es: 'cómo estás', fr: 'comment allez-vous', de: 'wie geht es dir', it: 'come stai' },
-        'good morning': { es: 'buenos días', fr: 'bonjour', de: 'guten morgen', it: 'buongiorno' },
-        'good night': { es: 'buenas noches', fr: 'bonne nuit', de: 'gute nacht', it: 'buonanotte' },
-      };
-
-      const result =
-        mockTranslations[text.toLowerCase()]?.[to] ||
-        `[Translated to ${languages.find((l) => l.code === to)?.name}: ${text}]`;
-      setTranslatedText(result);
-    } catch (err) {
-      console.error('Translation error:', err);
-      // Fallback to mock on error
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      if (from === 'auto') setDetectedLang('English');
-      const mockTranslations: Record<string, Record<string, string>> = {
-        hello: { es: 'hola', fr: 'bonjour', de: 'hallo', it: 'ciao' },
-        goodbye: { es: 'adiós', fr: 'au revoir', de: 'auf wiedersehen', it: 'ciao' },
-        'thank you': { es: 'gracias', fr: 'merci', de: 'danke', it: 'grazie' },
-        'how are you': { es: 'cómo estás', fr: 'comment allez-vous', de: 'wie geht es dir', it: 'come stai' },
-        'good morning': { es: 'buenos días', fr: 'bonjour', de: 'guten morgen', it: 'buongiorno' },
-        'good night': { es: 'buenas noches', fr: 'bonne nuit', de: 'gute nacht', it: 'buonanotte' },
-      };
-      const result =
-        mockTranslations[text.toLowerCase()]?.[to] ||
-        `[Translated to ${languages.find((l) => l.code === to)?.name}: ${text}]`;
-      setTranslatedText(result);
-    } finally {
-      setIsTranslating(false);
+    // Mock translation with language detection
+    if (from === "auto") {
+      setDetectedLang("English")
     }
-  };
+
+    const mockTranslations: Record<string, Record<string, string>> = {
+      hello: { es: "hola", fr: "bonjour", de: "hallo", it: "ciao" },
+      goodbye: { es: "adiós", fr: "au revoir", de: "auf wiedersehen", it: "ciao" },
+      "thank you": { es: "gracias", fr: "merci", de: "danke", it: "grazie" },
+      "how are you": { es: "cómo estás", fr: "comment allez-vous", de: "wie geht es dir", it: "come stai" },
+      "good morning": { es: "buenos días", fr: "bonjour", de: "guten morgen", it: "buongiorno" },
+      "good night": { es: "buenas noches", fr: "bonne nuit", de: "gute nacht", it: "buonanotte" },
+    }
+
+    const result =
+      mockTranslations[text.toLowerCase()]?.[to] ||
+      `[Translated to ${languages.find((l) => l.code === to)?.name}: ${text}]`
+    setTranslatedText(result)
+    setIsTranslating(false)
+  }
 
   const handleTranslate = () => {
-    if (!sourceText.trim()) return;
-    translateText(sourceText, sourceLang, targetLang);
-  };
+    if (!sourceText.trim()) return
+    translateText(sourceText, sourceLang, targetLang)
+  }
 
   const handleSwapLanguages = () => {
-    if (sourceLang === 'auto') return;
-    setSourceLang(targetLang);
-    setTargetLang(sourceLang);
-    setSourceText(translatedText);
-    setTranslatedText(sourceText);
-    setDetectedLang('');
-  };
+    if (sourceLang === "auto") return
+    setSourceLang(targetLang)
+    setTargetLang(sourceLang)
+    setSourceText(translatedText)
+    setTranslatedText(sourceText)
+    setDetectedLang("")
+  }
 
   const handleSpeak = (text: string, lang: string) => {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = lang === 'auto' ? 'en' : lang;
-      speechSynthesis.speak(utterance);
+    if ("speechSynthesis" in window) {
+      const utterance = new SpeechSynthesisUtterance(text)
+      utterance.lang = lang === "auto" ? "en" : lang
+      speechSynthesis.speak(utterance)
     }
-  };
+  }
 
   const handleListen = () => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
+    if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+      const recognition = new SpeechRecognition()
 
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = sourceLang === 'auto' ? 'en' : sourceLang;
+      recognition.continuous = false
+      recognition.interimResults = false
+      recognition.lang = sourceLang === "auto" ? "en" : sourceLang
 
-      recognition.onstart = () => setIsListening(true);
-      recognition.onend = () => setIsListening(false);
+      recognition.onstart = () => setIsListening(true)
+      recognition.onend = () => setIsListening(false)
       recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setSourceText(transcript);
-      };
+        const transcript = event.results[0][0].transcript
+        setSourceText(transcript)
+      }
 
-      recognition.start();
+      recognition.start()
     } else {
       toast({
-        title: 'Speech Recognition Not Supported',
+        title: "Speech Recognition Not Supported",
         description: "Your browser doesn't support speech recognition.",
-        variant: 'destructive',
-      });
+        variant: "destructive",
+      })
     }
-  };
+  }
 
   const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(text)
     toast({
-      title: 'Copied!',
-      description: 'Text copied to clipboard.',
-    });
-  };
+      title: "Copied!",
+      description: "Text copied to clipboard.",
+    })
+  }
 
   const handleRecentTranslation = (translation: (typeof recentTranslations)[0]) => {
-    setSourceText(translation.source);
-    setTranslatedText(translation.target);
-    setSourceLang(translation.from);
-    setTargetLang(translation.to);
-  };
+    setSourceText(translation.source)
+    setTranslatedText(translation.target)
+    setSourceLang(translation.from)
+    setTargetLang(translation.to)
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+      {/* Navigation */}
       <nav className="border-b border-white/10 bg-black/20 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -175,6 +149,7 @@ export default function TranslatePage() {
               </div>
               <span className="text-xl font-bold text-white">PolyglotPal</span>
             </Link>
+
             <div className="flex items-center space-x-4">
               <Link href="/auth/login">
                 <Button variant="ghost" className="text-white hover:bg-white/10">
@@ -194,6 +169,7 @@ export default function TranslatePage() {
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid gap-8 lg:grid-cols-4">
+          {/* Main Translation Area */}
           <div className="lg:col-span-3">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
               <h1 className="mb-2 text-3xl font-bold text-white">Free Language Translation</h1>
@@ -206,6 +182,7 @@ export default function TranslatePage() {
               <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
                 <CardContent className="p-6">
                   <div className="grid gap-6 lg:grid-cols-2">
+                    {/* Source */}
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <Select value={sourceLang} onValueChange={setSourceLang}>
@@ -278,6 +255,7 @@ export default function TranslatePage() {
                       </div>
                     </div>
 
+                    {/* Controls */}
                     <div className="flex items-center justify-center lg:flex-col lg:gap-4">
                       <div className="flex gap-2">
                         <Button
@@ -300,7 +278,7 @@ export default function TranslatePage() {
                           size="lg"
                           variant="ghost"
                           onClick={handleSwapLanguages}
-                          disabled={sourceLang === 'auto'}
+                          disabled={sourceLang === "auto"}
                           className="text-white hover:bg-white/10"
                         >
                           <RotateCcw className="h-5 w-5" />
@@ -308,6 +286,7 @@ export default function TranslatePage() {
                       </div>
                     </div>
 
+                    {/* Target */}
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <Select value={targetLang} onValueChange={setTargetLang}>
@@ -316,7 +295,7 @@ export default function TranslatePage() {
                           </SelectTrigger>
                           <SelectContent>
                             {languages
-                              .filter((lang) => lang.code !== 'auto')
+                              .filter((lang) => lang.code !== "auto")
                               .map((lang) => (
                                 <SelectItem key={lang.code} value={lang.code}>
                                   <div className="flex items-center gap-2">
@@ -373,7 +352,9 @@ export default function TranslatePage() {
             </motion.div>
           </div>
 
+          {/* Sidebar */}
           <div className="space-y-6">
+            {/* Recent Translations */}
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
               <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
                 <CardHeader>
@@ -393,11 +374,11 @@ export default function TranslatePage() {
                       <div className="text-sm text-slate-400">{translation.target}</div>
                       <div className="mt-1 flex gap-1">
                         <Badge variant="secondary" className="text-xs bg-white/10 text-white">
-                          {languages.find((l) => l.code === translation.from)?.flag}{' '}
+                          {languages.find((l) => l.code === translation.from)?.flag}{" "}
                           {languages.find((l) => l.code === translation.from)?.name}
                         </Badge>
                         <Badge variant="secondary" className="text-xs bg-white/10 text-white">
-                          {languages.find((l) => l.code === translation.to)?.flag}{' '}
+                          {languages.find((l) => l.code === translation.to)?.flag}{" "}
                           {languages.find((l) => l.code === translation.to)?.name}
                         </Badge>
                       </div>
@@ -407,6 +388,7 @@ export default function TranslatePage() {
               </Card>
             </motion.div>
 
+            {/* Upgrade CTA */}
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
               <Card className="border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-purple-500/10 backdrop-blur-sm">
                 <CardHeader>
@@ -429,5 +411,5 @@ export default function TranslatePage() {
         </div>
       </div>
     </div>
-  );
+  )
 }
