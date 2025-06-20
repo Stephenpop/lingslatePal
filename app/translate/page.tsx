@@ -47,26 +47,21 @@ export default function TranslatePage() {
   const [detectedLang, setDetectedLang] = useState("")
   const { toast } = useToast()
 
-  const translateText = async (text: string, from: string, to: string) => {
-    setIsTranslating(true);
+ const translateText = async (text: string, from: string, to: string) => {
+  setIsTranslating(true);
+  try {
+    const response = await fetch('/api/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, source: from, target: to }),
+    });
+    if (!response.ok) throw new Error('Translation failed');
+    const data = await response.json();
+    setTranslatedText(data.translatedText || data); // Adjust based on LibreTranslate response
+  } catch (error) {
+    console.error('Translation error:', error);
 
-    try {
-      // Attempt API call first
-      const response = await fetch('/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, source: from, target: to }),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setTranslatedText(data.translatedText || 'Translation not available');
-        setDetectedLang(from === 'auto' ? 'English' : ''); // Placeholder
-        return;
-      }
-      // Fallback to mock if API fails
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate delay
-      if (from === 'auto') setDetectedLang('English');
-
+    // Fallback to mock translations if API fails
     const mockTranslations: Record<string, Record<string, string>> = {
       hello: { es: "hola", fr: "bonjour", de: "hallo", it: "ciao" },
       goodbye: { es: "adiós", fr: "au revoir", de: "auf wiedersehen", it: "ciao" },
@@ -74,19 +69,28 @@ export default function TranslatePage() {
       "how are you": { es: "cómo estás", fr: "comment allez-vous", de: "wie geht es dir", it: "come stai" },
       "good morning": { es: "buenos días", fr: "bonjour", de: "guten morgen", it: "buongiorno" },
       "good night": { es: "buenas noches", fr: "bonne nuit", de: "gute nacht", it: "buonanotte" },
-    }
+    };
 
     const result =
       mockTranslations[text.toLowerCase()]?.[to] ||
-      `[Translated to ${languages.find((l) => l.code === to)?.name}: ${text}]`
-    setTranslatedText(result)
-    setIsTranslating(false)
+      `[Translated to ${languages.find((l) => l.code === to)?.name}: ${text}]`;
+    setTranslatedText(result);
+
+    toast({
+      title: 'Error',
+      description: 'Failed to translate. Using fallback.',
+      variant: 'destructive',
+    });
+  } finally {
+    setIsTranslating(false);
   }
 
-  const handleTranslate = () => {
-    if (!sourceText.trim()) return;
-    translateText(sourceText, sourceLang, targetLang);
-  };
+  }
+
+ const handleTranslate = () => {
+  if (!sourceText.trim()) return;
+  translateText(sourceText, sourceLang, targetLang);
+};
 
   const handleSwapLanguages = () => {
     if (sourceLang === "auto") return
