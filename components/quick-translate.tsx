@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowRight, Volume2, Mic, Copy, RotateCcw, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useToast } from "@/hooks/use-toast"
-import { translateAPI } from "@/lib/libretranslate"
+
 
 const languages = [
   { code: "auto", name: "Auto Detect" },
@@ -42,39 +42,40 @@ export function QuickTranslate() {
 
   // Replace the translateText function with:
   const translateText = async (text: string, from: string, to: string) => {
-    setIsTranslating(true)
+  setIsTranslating(true);
 
-    try {
-      const result = await translateAPI.translate({
-        q: text,
-        source: from,
-        target: to,
-      })
+  try {
+    const response = await fetch('/api/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, source: from, target: to }),
+    });
+    if (!response.ok) throw new Error('Translation failed');
+    const data = await response.json();
 
-      setTranslatedText(result.translatedText)
+    setTranslatedText(data.translatedText || '');
 
-      if (result.detectedLanguage && from === "auto") {
-        setDetectedLang(result.detectedLanguage.language)
-      }
-    } catch (error) {
-      console.error("Translation failed:", error)
-      // Fallback to mock translation for demo
-      const mockTranslations: Record<string, string> = {
-        hello: "hola",
-        goodbye: "adiós",
-        "thank you": "gracias",
-        "how are you": "cómo estás",
-        "good morning": "buenos días",
-        "good night": "buenas noches",
-      }
-
-      const result = mockTranslations[text.toLowerCase()] || `[Translation: ${text}]`
-      setTranslatedText(result)
-    } finally {
-      setIsTranslating(false)
+    if (data.detectedLanguage && from === "auto") {
+      setDetectedLang(data.detectedLanguage.language);
     }
-  }
+  } catch (error) {
+    console.error("Translation failed:", error);
+    // Fallback to mock translation for demo
+    const mockTranslations: Record<string, string> = {
+      hello: "hola",
+      goodbye: "adiós",
+      "thank you": "gracias",
+      "how are you": "cómo estás",
+      "good morning": "buenos días",
+      "good night": "buenas noches",
+    };
 
+    const result = mockTranslations[text.toLowerCase()] || `[Translation: ${text}]`;
+    setTranslatedText(result);
+  } finally {
+    setIsTranslating(false);
+  }
+}
   const handleTranslate = () => {
     if (!sourceText.trim()) return
     translateText(sourceText, sourceLang, targetLang)
