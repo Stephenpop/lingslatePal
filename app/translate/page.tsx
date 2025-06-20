@@ -48,15 +48,24 @@ export default function TranslatePage() {
   const { toast } = useToast()
 
   const translateText = async (text: string, from: string, to: string) => {
-    setIsTranslating(true)
+    setIsTranslating(true);
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    // Mock translation with language detection
-    if (from === "auto") {
-      setDetectedLang("English")
-    }
+    try {
+      // Attempt API call first
+      const response = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, source: from, target: to }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setTranslatedText(data.translatedText || 'Translation not available');
+        setDetectedLang(from === 'auto' ? 'English' : ''); // Placeholder
+        return;
+      }
+      // Fallback to mock if API fails
+      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate delay
+      if (from === 'auto') setDetectedLang('English');
 
     const mockTranslations: Record<string, Record<string, string>> = {
       hello: { es: "hola", fr: "bonjour", de: "hallo", it: "ciao" },
@@ -75,9 +84,9 @@ export default function TranslatePage() {
   }
 
   const handleTranslate = () => {
-    if (!sourceText.trim()) return
-    translateText(sourceText, sourceLang, targetLang)
-  }
+    if (!sourceText.trim()) return;
+    translateText(sourceText, sourceLang, targetLang);
+  };
 
   const handleSwapLanguages = () => {
     if (sourceLang === "auto") return
