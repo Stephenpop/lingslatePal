@@ -188,6 +188,10 @@ export default function LoginPage() {
           </CardContent>
         </Card>
       </motion.div>
+      <div className="mt-6 flex justify-between text-xs text-slate-400">
+  <Link href="/privacy" className="underline hover:text-white">Privacy Policy</Link>
+  <Link href="/terms" className="underline hover:text-white">Terms of Service</Link>
+</div>
     </div>
   )
 }
