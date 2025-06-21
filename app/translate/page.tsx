@@ -29,6 +29,12 @@ const languages = [
   { code: "tr", name: "Turkish", flag: "🇹🇷" },
   { code: "pl", name: "Polish", flag: "🇵🇱" },
   { code: "nl", name: "Dutch", flag: "🇳🇱" },
+  { code: "yo", name: "Yoruba" },
+  { code: "ig", name: "Igbo" },
+  { code: "ha", name: "Hausa" },
+  { code: "sw", name: "Swahili" },
+  { code: "am", name: "Amharic" },
+  { code: "zu", name: "Zulu" },
 ]
 
 const recentTranslations = [

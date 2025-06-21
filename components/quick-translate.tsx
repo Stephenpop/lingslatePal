@@ -28,6 +28,12 @@ const languages = [
   { code: "tr", name: "Turkish" },
   { code: "pl", name: "Polish" },
   { code: "nl", name: "Dutch" },
+  { code: "yo", name: "Yoruba" },
+  { code: "ig", name: "Igbo" },
+  { code: "ha", name: "Hausa" },
+  { code: "sw", name: "Swahili" },
+  { code: "am", name: "Amharic" },
+  { code: "zu", name: "Zulu" },
 ]
 
 export function QuickTranslate() {
